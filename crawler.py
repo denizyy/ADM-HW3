@@ -3,9 +3,6 @@ from bs4 import BeautifulSoup
 
 # Here we define all the functions to crawl websites
 
-
-
-
 def extract_MSc(url):
 
     """ Function to extract names of Master's degrees from a given URL
