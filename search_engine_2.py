@@ -1,26 +1,28 @@
-import heapq
-import pandas as pd
+import heapq  # Importing heapq module for heap operations
+import pandas as pd  
 import nltk
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer  
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 def search_engine_2(df, terms, lst_stopwords, query, K):
+    # Reading the precomputed TF-IDF data from a CSV file
     tfidf_data = pd.read_csv('/home/theballer/Desktop/Sapienza Courses/ADM/ADM-HW3/tfidf_data.csv')
-    
+
+    # Initializing a Porter stemmer from nltk for word stemming
     stemmer = nltk.PorterStemmer()
 
+    # Tokenizing and stemming the input query
     cleaned_query = [stemmer.stem(word) for word in nltk.word_tokenize(query) if not word in lst_stopwords and word.isalnum()]
 
-    indexes = set()
+    # Filtering the terms in the query that are present in the TF-IDF data columns
     cleaned_query_in_vocab = [term for term in cleaned_query if term in tfidf_data.columns]
 
+    # Finding document indexes that contain the terms in the cleaned query
+    indexes = set()
     for term in cleaned_query_in_vocab:
         term_matches = terms.loc[terms['term'] == term, 'reverse'].tolist()
-
         if term_matches:
             term_indexes = set(term_matches[0])
-
             if not indexes:
                 indexes = term_indexes
             else:
@@ -28,21 +30,25 @@ def search_engine_2(df, terms, lst_stopwords, query, K):
 
     # Create the TfidfVectorizer only if there are terms in cleaned_query_in_vocab
     if cleaned_query_in_vocab:
+        # Creating a TfidfVectorizer using specific parameters and the cleaned_query_in_vocab terms
         query_tfidf = TfidfVectorizer(input='content', lowercase=False, tokenizer=lambda text: text, vocabulary=cleaned_query_in_vocab)
         query_df = tfidf_data.loc[df.loc[df.index.isin(indexes)].index][cleaned_query_in_vocab]
+
+        # Computing TF-IDF for the input query
         query_results = query_tfidf.fit_transform([cleaned_query_in_vocab])
         query_result_dense = query_results.todense()
         query_tfidf_data = pd.DataFrame(query_result_dense.tolist(), columns=[cleaned_query_in_vocab])
         cossim_data = cosine_similarity(query_df, query_tfidf_data)
 
+        # Finding the top K similar documents using a max heap
         max_heap = []
         for idx, sim in zip(indexes, cossim_data):
             heapq.heappush(max_heap, (sim[0], idx))
             if len(max_heap) > K:
                 heapq.heappop(max_heap)
 
+        # Retrieving the top K documents and their information
         top_k_documents = heapq.nlargest(K, max_heap)
-
         final_output = []
         for sim, idx in top_k_documents:
             doc_info = df.iloc[idx]
@@ -51,9 +57,10 @@ def search_engine_2(df, terms, lst_stopwords, query, K):
                 "universityName": doc_info["universityName"],
                 "description": doc_info["description"],
                 "url": doc_info['url'],
-                "Similarity": sim
+                "similarity": sim
             })
 
+        # Creating a DataFrame from the final output and returning it
         final_output = pd.DataFrame(final_output)
         return final_output
     else:
