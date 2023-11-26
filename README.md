@@ -7,7 +7,7 @@ This repository contains the solutions of the Group #15 for the 3rd HW of the AD
 - Francesco Sbordone - ID: 1969896
 - Francesco Lazzari - ID: 1917922
 - Abzal Aidakhmetov - ID: 2115331
--  
+- Deniz Yilmaz - ID: 2108621
 
 ## Files in the Repository:
 - __`main.ipynb`__: this file contains all the answers to Questions. Note that the map in Question 4 is not visible from github so a rendered version is available [here](https://nbviewer.org/github/denizyy/ADM-HW3/blob/main/HW3.ipynb)
