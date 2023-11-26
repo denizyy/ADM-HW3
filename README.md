@@ -6,7 +6,7 @@ This repository contains the solutions of the Group #15 for the 3rd HW of the AD
 ## Group Members:
 - Francesco Sbordone - ID: 1969896
 - Francesco Lazzari - ID: 1917922
--  
+- Abzal Aidakhmetov - ID: 2115331
 -  
 
 ## Files in the Repository:
